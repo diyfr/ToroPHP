@@ -1,9 +1,31 @@
 <?php
 
-class Toro
-{
-    public static function serve($routes)
-    {
+class Toro {
+    private $routes = [];
+
+    private static $instance;
+
+    protected function __construct() {}
+    private function __clone() {}
+    private function __wakeup() {}
+    
+    public static function getInstance() {
+        if (null === static::$instance) {
+            static::$instance = new static();
+        }
+        return static::$instance;
+    }
+
+    public static function addRoute($route) {
+        $inst = self::getInstance();
+        $inst->routes += $route;
+    }
+    
+    public static function serve($routes = null) {
+        $inst = self::getInstance();
+        if ($routes == null) {
+            $routes = $inst->routes;
+        }
         ToroHook::fire('before_request', compact('routes'));
 
         $request_method = strtolower($_SERVER['REQUEST_METHOD']);
